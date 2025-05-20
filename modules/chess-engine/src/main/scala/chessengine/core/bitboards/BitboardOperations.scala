@@ -24,22 +24,6 @@ object BitboardOperations {
   def westOne(b: Bitboard): Bitboard      = (b >>> 1) & NotFileH
   def northWestOne(b: Bitboard): Bitboard = (b << 7) & NotFileH
 
-  def northFill(b: Bitboard): Bitboard = {
-    var bb: Bitboard = b
-    bb |= bb << 8
-    bb |= bb << 16
-    bb |= bb << 32
-    bb
-  }
-
-  def southFill(b: Bitboard): Bitboard = {
-    var bb: Bitboard = b
-    bb |= bb >>> 8
-    bb |= bb >>> 16
-    bb |= bb >>> 32
-    bb
-  }
-
   private val DeBruijn64: Bitboard = 0x03f79d71b4cb0a89L
 
   private val DeBruijnBitScanForwardArray: Vector[Byte] = Vector(
@@ -113,8 +97,8 @@ object BitboardOperations {
       val bb: Bitboard = 1L << square
 
       color match {
-        case White => northEastOne(bb) | northWestOne(bb)
-        case Black => southEastOne(bb) | southWestOne(bb)
+        case Color.White => northEastOne(bb) | northWestOne(bb)
+        case Color.Black => southEastOne(bb) | southWestOne(bb)
       }
     }
 
@@ -122,13 +106,13 @@ object BitboardOperations {
     var blackPawnAttacks: List[Bitboard] = List.empty
 
     for (sq <- 0 to 64) {
-      whitePawnAttacks = pawnAttacks(sq, White) :: whitePawnAttacks
-      blackPawnAttacks = pawnAttacks(sq, Black) :: blackPawnAttacks
+      whitePawnAttacks = pawnAttacks(sq, Color.White) :: whitePawnAttacks
+      blackPawnAttacks = pawnAttacks(sq, Color.Black) :: blackPawnAttacks
     }
 
     Map(
-      White -> whitePawnAttacks.reverse.toVector,
-      Black -> blackPawnAttacks.reverse.toVector
+      Color.White -> whitePawnAttacks.reverse.toVector,
+      Color.Black -> blackPawnAttacks.reverse.toVector
     )
   }
 

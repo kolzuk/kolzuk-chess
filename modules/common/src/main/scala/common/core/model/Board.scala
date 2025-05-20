@@ -32,16 +32,16 @@ case class Board(
       var blackCanCastleQueenSide: Boolean = castlingAvailability.blackCanCastleQueenSide
 
       movingFigure match {
-        case King(White) =>
+        case King(Color.White) =>
           whiteCanCastleKingSide = false
           whiteCanCastleQueenSide = false
-        case Rook(White) =>
+        case Rook(Color.White) =>
           if (whiteCanCastleKingSide && move.from == 7) whiteCanCastleKingSide = false
           if (whiteCanCastleQueenSide && move.from == 0) whiteCanCastleQueenSide = false
-        case King(Black) =>
+        case King(Color.Black) =>
           blackCanCastleKingSide = false
           blackCanCastleQueenSide = false
-        case Rook(Black) =>
+        case Rook(Color.Black) =>
           if (blackCanCastleKingSide && move.from == 63) blackCanCastleKingSide = false
           if (blackCanCastleQueenSide && move.from == 56) blackCanCastleQueenSide = false
         case _ =>
@@ -50,10 +50,10 @@ case class Board(
       capturedFigureOpt match {
         case Some(figure) =>
           figure match {
-            case Rook(White) =>
+            case Rook(Color.White) =>
               if (whiteCanCastleKingSide && move.to == 7) whiteCanCastleKingSide = false
               if (whiteCanCastleQueenSide && move.to == 0) whiteCanCastleQueenSide = false
-            case Rook(Black) =>
+            case Rook(Color.Black) =>
               if (blackCanCastleKingSide && move.to == 63) blackCanCastleKingSide = false
               if (blackCanCastleQueenSide && move.to == 56) blackCanCastleQueenSide = false
             case _ => ()
@@ -65,33 +65,35 @@ case class Board(
     }
 
     val newEnPassantTargetSquare: Option[Int] = movingFigure match {
-      case Pawn(White) if move.to == move.from + 16 => Some(move.from + 8)
-      case Pawn(Black) if move.to == move.from - 16 => Some(move.from - 8)
+      case Pawn(Color.White) if move.to == move.from + 16 => Some(move.from + 8)
+      case Pawn(Color.Black) if move.to == move.from - 16 => Some(move.from - 8)
       case _ => None
     }
 
     val newHalfMoveClock = if (capturedFigureOpt.nonEmpty
-      || movingFigure == Pawn(White)
-      || movingFigure == Pawn(Black)) 0 else halfMoveClock + 1
+      || movingFigure == Pawn(Color.White)
+      || movingFigure == Pawn(Color.Black)) 0 else halfMoveClock + 1
 
     activeColor match {
-      case White => copy(newBoard, Black, newCastlingAvailability,
+      case Color.White => copy(newBoard, Color.Black, newCastlingAvailability,
         newEnPassantTargetSquare, newHalfMoveClock, fullMoveNumber)
-      case Black => copy(newBoard, White, newCastlingAvailability,
+      case Color.Black => copy(newBoard, Color.White, newCastlingAvailability,
         newEnPassantTargetSquare, newHalfMoveClock, fullMoveNumber + 1)
     }
   }
 
   private def makeEnPassantMove(move: Move): Board = {
-    val capturedPawnSquare = if (activeColor == White) move.to - 8 else move.to + 8
+    val capturedPawnSquare = if (activeColor == Color.White) move.to - 8 else move.to + 8
     val newBoard = boardRepresentation
       .updated(move.from, None)
       .updated(move.to, Some(Pawn(activeColor)))
       .updated(capturedPawnSquare, None)
 
     activeColor match {
-      case White => copy(newBoard, Black, castlingAvailability, None, 0, fullMoveNumber)
-      case Black => copy(newBoard, White, castlingAvailability, None, 0, fullMoveNumber + 1)
+      case Color.White =>
+        copy(newBoard, Color.Black, castlingAvailability, None, 0, fullMoveNumber)
+      case Color.Black =>
+        copy(newBoard, Color.White, castlingAvailability, None, 0, fullMoveNumber + 1)
     }
   }
 
@@ -100,34 +102,34 @@ case class Board(
       val newBoard: Vector[Square] = boardRepresentation
         .updated(4, None)
         .updated(7, None)
-        .updated(6, Some(King(White)))
-        .updated(5, Some(Rook(White)))
+        .updated(6, Some(King(Color.White)))
+        .updated(5, Some(Rook(Color.White)))
 
-      copy(newBoard, Black, castlingAvailability.withoutWhiteCastle, None, halfMoveClock + 1, fullMoveNumber)
+      copy(newBoard, Color.Black, castlingAvailability.withoutWhiteCastle, None, halfMoveClock + 1, fullMoveNumber)
     case CastleType.WhiteQueenSide =>
       val newBoard: Vector[Square] = boardRepresentation
         .updated(4, None)
         .updated(0, None)
-        .updated(2, Some(King(White)))
-        .updated(3, Some(Rook(White)))
+        .updated(2, Some(King(Color.White)))
+        .updated(3, Some(Rook(Color.White)))
 
-      copy(newBoard, Black, castlingAvailability.withoutWhiteCastle, None, halfMoveClock + 1, fullMoveNumber)
+      copy(newBoard, Color.Black, castlingAvailability.withoutWhiteCastle, None, halfMoveClock + 1, fullMoveNumber)
     case CastleType.BlackKingSide =>
       val newBoard: Vector[Square] = boardRepresentation
         .updated(60, None)
         .updated(63, None)
-        .updated(62, Some(King(Black)))
-        .updated(61, Some(Rook(Black)))
+        .updated(62, Some(King(Color.Black)))
+        .updated(61, Some(Rook(Color.Black)))
 
-      copy(newBoard, White, castlingAvailability.withoutBlackCastle, None, halfMoveClock + 1, fullMoveNumber + 1)
+      copy(newBoard, Color.White, castlingAvailability.withoutBlackCastle, None, halfMoveClock + 1, fullMoveNumber + 1)
     case CastleType.BlackQueenSide =>
       val newBoard: Vector[Square] = boardRepresentation
         .updated(60, None)
         .updated(56, None)
-        .updated(58, Some(King(Black)))
-        .updated(59, Some(Rook(Black)))
+        .updated(58, Some(King(Color.Black)))
+        .updated(59, Some(Rook(Color.Black)))
 
-      copy(newBoard, White, castlingAvailability.withoutBlackCastle, None, halfMoveClock + 1, fullMoveNumber + 1)
+      copy(newBoard, Color.White, castlingAvailability.withoutBlackCastle, None, halfMoveClock + 1, fullMoveNumber + 1)
   }
 
   private def makePromotionMove(move: Move, promotion: Figure): Board = {
@@ -144,8 +146,8 @@ case class Board(
     }
 
     activeColor match {
-      case White => copy(newBoard, Black, newCastlingAvailability, None, 0, fullMoveNumber)
-      case Black => copy(newBoard, White, newCastlingAvailability, None, 0, fullMoveNumber + 1)
+      case Color.White => copy(newBoard, Color.Black, newCastlingAvailability, None, 0, fullMoveNumber)
+      case Color.Black => copy(newBoard, Color.White, newCastlingAvailability, None, 0, fullMoveNumber + 1)
     }
   }
 

@@ -1,6 +1,7 @@
 package common.core.model
 
 import cats.Show
+import common.core.utils.SquareOps
 
 final case class Move(
   from: Int,
@@ -12,13 +13,14 @@ object Move {
   import MoveType._
   import CastleType._
 
-  implicit val showMove: Show[Move] = Show.show { move =>
-    val from: String      = s"${('a' + (move.from % 8)).toChar}${move.from / 8 + 1}"
-    val to: String        = s"${('a' + (move.to % 8)).toChar}${move.to / 8 + 1}"
+  implicit val ShowMove: Show[Move] = Show.show { move =>
+    val from: String      = SquareOps.toString(move.from)
+    val to: String        = SquareOps.toString(move.to)
     val promotion: String = move.moveType match {
       case Promotion(promotion) => s"${promotion.charRepresentation.toLower}"
       case _                    => ""
     }
+
     s"$from$to$promotion"
   }
 
@@ -43,11 +45,11 @@ object Move {
 
     board.enPassantTargetSquare
       .foreach(sq => {
-        if (sq == to && (movingFigure == Pawn(White) || movingFigure == Pawn(Black)))
+        if (sq == to && (movingFigure == Pawn(Color.White) || movingFigure == Pawn(Color.Black)))
           return Move(from, to, EnPassant)
       })
 
-    if (movingFigure == King(White) || movingFigure == King(Black)) {
+    if (movingFigure == King(Color.White) || movingFigure == King(Color.Black)) {
       (from, to) match {
         case (4, 6) => return Move(from, to, Castle(WhiteKingSide))
         case (4, 2) => return Move(from, to, Castle(WhiteQueenSide))

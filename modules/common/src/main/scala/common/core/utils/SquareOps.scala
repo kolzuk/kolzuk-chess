@@ -15,4 +15,6 @@ object SquareOps {
 
     Some((rank + file).shortValue)
   }
+
+  def toString(sq: Int): String = s"${('a' + (sq % 8)).toChar}${sq / 8 + 1}"
 }

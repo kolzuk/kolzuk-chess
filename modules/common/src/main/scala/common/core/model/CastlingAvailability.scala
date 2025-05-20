@@ -1,7 +1,10 @@
 package common.core.model
 
+import cats.Show
+
 /**
  * Represents castling rights for both colors.
+ *
  * @see <a href=https://www.chessprogramming.org/Castling_Rights>Castling Rights</a>
  */
 case class CastlingAvailability(
@@ -19,16 +22,34 @@ case class CastlingAvailability(
     blackCanCastleKingSide = false,
     blackCanCastleQueenSide = false
   )
-
-  def toIterable: Iterable[Boolean] =
-    Iterable(whiteCanCastleKingSide, whiteCanCastleQueenSide, blackCanCastleKingSide, blackCanCastleQueenSide)
 }
 
 object CastlingAvailability {
-  def noCastle: CastlingAvailability = CastlingAvailability(
-    whiteCanCastleKingSide = false,
-    whiteCanCastleQueenSide = false,
-    blackCanCastleKingSide = false,
-    blackCanCastleQueenSide = false
-  )
+  private val CastlingAvailabilityRegex = "^[KQkq]{1,4}|-$".r
+
+  /**
+   * Castling availability instance creating from FEN notation
+   * @example KQkq
+   */
+  def apply(castlingAvailability: String): CastlingAvailability = {
+    require(CastlingAvailabilityRegex.matches(castlingAvailability),
+      s"$castlingAvailability does not match with FEN notation")
+
+    val K = castlingAvailability.contains('K')
+    val Q = castlingAvailability.contains('Q')
+    val k = castlingAvailability.contains('k')
+    val q = castlingAvailability.contains('q')
+
+    CastlingAvailability(K, Q, k, q)
+  }
+
+  implicit val ShowCastlingAvailability: Show[CastlingAvailability] = Show.show { ca =>
+    val K = if (ca.whiteCanCastleKingSide) "K" else ""
+    val Q = if (ca.whiteCanCastleQueenSide) "Q" else ""
+    val k = if (ca.blackCanCastleKingSide) "k" else ""
+    val q = if (ca.blackCanCastleQueenSide) "q" else ""
+
+    val result = s"$K$Q$k$q"
+    if (result.isEmpty) "-" else result
+  }
 }

@@ -47,8 +47,8 @@ class MoveGeneratorLive extends MoveGenerator {
   }
 
   private def generatePromotionMoves(sq: Int, color: Color)(implicit br: BitboardRepresentation, board: Board): List[Move] = {
-    if (color == White && (sq < 48 || sq > 55)) return List.empty
-    if (color == Black && (sq < 8 || sq > 15)) return List.empty
+    if (color == Color.White && (sq < 48 || sq > 55)) return List.empty
+    if (color == Color.Black && (sq < 8 || sq > 15)) return List.empty
 
     val pawnAttacksBitboard = pawnsAttacksMap(color)(sq) & br.occupiedByOppositeColorBitboard(color)
     val pawnSinglePushBitboard = br.getPawnSinglePush(sq, color)
@@ -117,7 +117,7 @@ class MoveGeneratorLive extends MoveGenerator {
   private def generateCastleMoves(color: Color)(implicit br: BitboardRepresentation, board: Board): List[Move] = {
     var moves = List.empty[Move]
     color match {
-      case White =>
+      case Color.White =>
         if (
           ((f1g1 & br.empty) == f1g1) &&
           !br.isSquareAttacked(4, color) &&
@@ -133,7 +133,7 @@ class MoveGeneratorLive extends MoveGenerator {
           !br.isSquareAttacked(2, color) &&
           board.castlingAvailability.whiteCanCastleQueenSide
         ) moves = Move(4, 2, Castle(WhiteQueenSide)) :: moves
-      case Black =>
+      case Color.Black =>
         if (
           ((f8g8 & br.empty) == f8g8) &&
           !br.isSquareAttacked(60, color) &&

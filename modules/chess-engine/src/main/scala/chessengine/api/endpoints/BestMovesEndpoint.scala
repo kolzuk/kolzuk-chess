@@ -28,7 +28,6 @@ object BestMovesEndpoint {
     } yield BestMovesOutput(moves)
 
     result
-      .tapError(err => ZIO.logError(s"Error: $err"))
       .catchAll(_ => ZIO.succeed(BestMovesOutput(Nil)))
   })
 }

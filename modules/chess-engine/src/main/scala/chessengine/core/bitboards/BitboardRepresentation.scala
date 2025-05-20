@@ -5,9 +5,9 @@ import chessengine.core.bitboards.BitboardRepresentation._
 import common.core.model.MoveType.Normal
 import common.core.model._
 
-import scala.collection._
-
 case class BitboardRepresentation(bitboards: Vector[Bitboard]) {
+  import Color._
+
   require(bitboards.length == 12, "The number of bitboards should be 12!")
 
   private val whitePawnBitboard: Bitboard   = bitboards(0)
@@ -63,24 +63,10 @@ case class BitboardRepresentation(bitboards: Vector[Bitboard]) {
   def occupied: Bitboard = occupiedByWhiteBitboard | occupiedByBlackBitboard
   def empty: Bitboard    = ~occupied
 
-  def isKingChecked(color: Color): Boolean = {
-    val opColor = color.opponentColor
+  private def isKingChecked(color: Color): Boolean = {
+    val squareOfKing = bitScanForward(kingBitboard(color))
 
-    val squareOfKing        = bitScanForward(kingBitboard(color))
-
-    val opPawns: Bitboard   = pawnBitboard(opColor)
-    val opKnights: Bitboard = knightBitboard(opColor)
-    val opRooks: Bitboard   = rookBitboard(opColor)
-    val opBishops: Bitboard = bishopBitboard(opColor)
-    val opQueen: Bitboard   = queenBitboard(opColor)
-
-    (
-      (pawnsAttacksMap(color)(squareOfKing)      & opPawns)
-        | (knightAttacksVector(squareOfKing)     & opKnights)
-        | (bishopAttacks(squareOfKing, occupied) & opBishops)
-        | (rookAttacks(squareOfKing, occupied)   & opRooks)
-        | (queenAttacks(squareOfKing, occupied)  & opQueen)
-      ) != 0
+    isSquareAttacked(squareOfKing, color)
   }
 
   def isSquareAttacked(sq: Int, color: Color): Boolean = {
@@ -91,12 +77,14 @@ case class BitboardRepresentation(bitboards: Vector[Bitboard]) {
     val opRooks: Bitboard   = rookBitboard(opColor)
     val opBishops: Bitboard = bishopBitboard(opColor)
     val opQueen: Bitboard   = queenBitboard(opColor)
+    val opKing: Bitboard    = kingBitboard(opColor)
 
     val result = (pawnsAttacksMap(color)(sq) & opPawns) |
       (knightAttacksVector(sq)     & opKnights) |
       (bishopAttacks(sq, occupied) & opBishops) |
       (rookAttacks(sq, occupied)   & opRooks) |
-      (queenAttacks(sq, occupied)  & opQueen)
+      (queenAttacks(sq, occupied)  & opQueen) |
+      (kingAttacksVector(sq)       & opKing)
 
 
     result != 0
@@ -120,6 +108,8 @@ case class BitboardRepresentation(bitboards: Vector[Bitboard]) {
 }
 
 object BitboardRepresentation {
+  import Color._
+
   type Bitboard = Long
 
   def fromBoard(board: Board): BitboardRepresentation = {
@@ -162,6 +152,9 @@ object BitboardRepresentation {
   }
 
   def movesFrom(sq: Int, movesBitboard: Bitboard, moveType: MoveType = Normal): List[Move] = {
+    if (movesBitboard == 0L)
+      return Nil
+
     var moves: List[Move] = List.empty
     var bb = movesBitboard
 

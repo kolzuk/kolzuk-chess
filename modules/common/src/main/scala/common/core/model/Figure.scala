@@ -7,23 +7,23 @@ sealed trait Figure {
 
 object Figure {
   def getPieceCharByColor(color: Color, whiteChar: Char, blackChar: Char): Char = color match {
-    case White => whiteChar
-    case Black => blackChar
+    case Color.White => whiteChar
+    case Color.Black => blackChar
   }
 
   def getPieceByChar(figure: Char): Option[Figure] = figure match {
-    case 'p' => Some(Pawn(Black))
-    case 'P' => Some(Pawn(White))
-    case 'n' => Some(Knight(Black))
-    case 'N' => Some(Knight(White))
-    case 'b' => Some(Bishop(Black))
-    case 'B' => Some(Bishop(White))
-    case 'r' => Some(Rook(Black))
-    case 'R' => Some(Rook(White))
-    case 'q' => Some(Queen(Black))
-    case 'Q' => Some(Queen(White))
-    case 'k' => Some(King(Black))
-    case 'K' => Some(King(White))
+    case 'p' => Some(Pawn(Color.Black))
+    case 'P' => Some(Pawn(Color.White))
+    case 'n' => Some(Knight(Color.Black))
+    case 'N' => Some(Knight(Color.White))
+    case 'b' => Some(Bishop(Color.Black))
+    case 'B' => Some(Bishop(Color.White))
+    case 'r' => Some(Rook(Color.Black))
+    case 'R' => Some(Rook(Color.White))
+    case 'q' => Some(Queen(Color.Black))
+    case 'Q' => Some(Queen(Color.White))
+    case 'k' => Some(King(Color.Black))
+    case 'K' => Some(King(Color.White))
     case _   => None
   }
 }

@@ -1,7 +1,7 @@
 package common.core.utils
 
+import cats.implicits.toShow
 import common.core.model
-import common.core.model.{Black, Board, Color, Figure, White}
 import common.core.model.Board._
 import common.core.model._
 
@@ -12,12 +12,42 @@ import common.core.model._
  *
  * {@code rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1}
  *
- * https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation
+ * @see <a href=https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation>Forsyth–Edwards Notation</a>
  */
 object ForsythEdwardsNotationUtils {
-  // TODO
   def fromBoard(board: Board): String = {
-    ???
+    val lines = new Array[String](8)
+
+    for (rank <- 0 until 8) {
+      val line: StringBuilder = new StringBuilder
+      var empty = 0
+      for (file <- 0 until 8) {
+        board(rank * 8 + file) match {
+          case Some(figure) =>
+            if (empty != 0) {
+              line.append(empty)
+              empty = 0
+            }
+            line.append(figure.charRepresentation)
+          case None         => empty += 1
+        }
+      }
+      if (empty != 0)
+        line.append(empty)
+
+      lines(rank) = line.toString()
+    }
+
+    val piecePlacement: String = lines.reverse.mkString("/")
+    val color: Char = board.activeColor.char
+    val ca: String = board.castlingAvailability.show
+    val halfMoveClock: Int = board.halfMoveClock
+    val enPassantTargetSquare: String = board.enPassantTargetSquare
+      .map(SquareOps.toString)
+      .getOrElse("-")
+    val fullMoveNumber: Int = board.fullMoveNumber
+
+    s"$piecePlacement $color $ca $enPassantTargetSquare $halfMoveClock $fullMoveNumber"
   }
 
   def toBoard(fen: String): Option[Board] = {
@@ -28,8 +58,8 @@ object ForsythEdwardsNotationUtils {
 
     for {
       figurePositions <- parseFigurePosition(data.take(8))
-      activeColor <- parseActiveColor(data(8))
-      castlingAvailability <- parseCastlingAvailability(data(9))
+      activeColor = Color(data(8))
+      castlingAvailability = CastlingAvailability(data(9))
       enPassantTargetSquare = parseEnPassantTargetSquare(data(10))
       halfMoveClock <- parseHalfMoveClock(data(11))
       fullMoveNumber <- parseFullMoveNumber(data(12))
@@ -37,7 +67,6 @@ object ForsythEdwardsNotationUtils {
   }
 
   /**
-   *
    * @param figurePositions
    * 8-length array. Each line representing rank.
    * @return
@@ -75,26 +104,6 @@ object ForsythEdwardsNotationUtils {
     }
 
     Some(squares.reverse.toVector)
-  }
-
-  private def parseActiveColor(activeColor: String): Option[Color] = activeColor match {
-    case "w" => Some(White)
-    case "b" => Some(Black)
-    case _   => None
-  }
-
-  private def parseCastlingAvailability(castlingAvailability: String): Option[CastlingAvailability] = {
-    val castlingAvailabilityRegex = "^[KQkq]{1,4}|-$".r
-
-    if (!castlingAvailabilityRegex.matches(castlingAvailability))
-      return None
-
-    val K: Boolean = castlingAvailability.contains('K')
-    val Q: Boolean = castlingAvailability.contains('Q')
-    val k: Boolean = castlingAvailability.contains('k')
-    val q: Boolean = castlingAvailability.contains('q')
-
-    Some(CastlingAvailability(K, Q, k, q))
   }
 
   private def parseEnPassantTargetSquare(enPassantTargetSquare: String): Option[SquareIndex] =

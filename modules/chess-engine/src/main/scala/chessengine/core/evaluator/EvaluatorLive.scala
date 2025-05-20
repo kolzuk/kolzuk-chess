@@ -6,11 +6,11 @@ class EvaluatorLive extends Evaluator {
   import EvaluatorLive._
 
   override def evaluate(board: Board): Int = {
-    val whiteEval = countMaterial(board, White)
-    val blackEval = countMaterial(board, Black)
+    val whiteEval = countMaterial(board, Color.White)
+    val blackEval = countMaterial(board, Color.Black)
     val evaluation = whiteEval - blackEval
 
-    val perspective = if (board.activeColor == White) 1 else -1
+    val perspective = if (board.activeColor == Color.White) 1 else -1
 
     evaluation * perspective
   }
@@ -23,7 +23,7 @@ object EvaluatorLive {
   private val RookWeight   = 500
   private val QueenWeight  = 900
 
-  def countMaterial(board: Board, evaluatingColor: Color): Int = {
+  private def countMaterial(board: Board, evaluatingColor: Color): Int = {
     var material = 0
     for (sq <- 0 until 64) {
       board(sq) match {
