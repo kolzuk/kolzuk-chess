@@ -1,9 +1,11 @@
 package chessengine.core.bitboards
 
-import BitboardRepresentation._
-import common.core.model._
-import BitboardOperations._
+import chessengine.core.bitboards.BitboardOperations._
+import chessengine.core.bitboards.BitboardRepresentation._
 import common.core.model.MoveType.Normal
+import common.core.model._
+
+import scala.collection._
 
 case class BitboardRepresentation(bitboards: Vector[Bitboard]) {
   require(bitboards.length == 12, "The number of bitboards should be 12!")
@@ -121,45 +123,28 @@ object BitboardRepresentation {
   type Bitboard = Long
 
   def fromBoard(board: Board): BitboardRepresentation = {
-    var wPawn   = BitboardOperations.EmptyBitboard
-    var wKnight = BitboardOperations.EmptyBitboard
-    var wBishop = BitboardOperations.EmptyBitboard
-    var wRook   = BitboardOperations.EmptyBitboard
-    var wQueen  = BitboardOperations.EmptyBitboard
-    var wKing   = BitboardOperations.EmptyBitboard
-
-    var bPawn   = BitboardOperations.EmptyBitboard
-    var bKnight = BitboardOperations.EmptyBitboard
-    var bBishop = BitboardOperations.EmptyBitboard
-    var bRook   = BitboardOperations.EmptyBitboard
-    var bQueen  = BitboardOperations.EmptyBitboard
-    var bKing   = BitboardOperations.EmptyBitboard
+    val bitboards = new Array[Bitboard](12)
 
     for (i <- 0 until 64) {
       board.boardRepresentation(i) match {
-        case Some(Pawn(White))   => wPawn   |= 1L << i
-        case Some(Knight(White)) => wKnight |= 1L << i
-        case Some(Bishop(White)) => wBishop |= 1L << i
-        case Some(Rook(White))   => wRook   |= 1L << i
-        case Some(Queen(White))  => wQueen  |= 1L << i
-        case Some(King(White))   => wKing   |= 1L << i
+        case Some(Pawn(White))   => bitboards(0)  |= 1L << i
+        case Some(Knight(White)) => bitboards(1)  |= 1L << i
+        case Some(Bishop(White)) => bitboards(2)  |= 1L << i
+        case Some(Rook(White))   => bitboards(3)  |= 1L << i
+        case Some(Queen(White))  => bitboards(4)  |= 1L << i
+        case Some(King(White))   => bitboards(5)  |= 1L << i
 
-        case Some(Pawn(Black))   => bPawn   |= 1L << i
-        case Some(Knight(Black)) => bKnight |= 1L << i
-        case Some(Bishop(Black)) => bBishop |= 1L << i
-        case Some(Rook(Black))   => bRook   |= 1L << i
-        case Some(Queen(Black))  => bQueen  |= 1L << i
-        case Some(King(Black))   => bKing   |= 1L << i
-        case None                =>
+        case Some(Pawn(Black))   => bitboards(6)  |= 1L << i
+        case Some(Knight(Black)) => bitboards(7)  |= 1L << i
+        case Some(Bishop(Black)) => bitboards(8)  |= 1L << i
+        case Some(Rook(Black))   => bitboards(9)  |= 1L << i
+        case Some(Queen(Black))  => bitboards(10) |= 1L << i
+        case Some(King(Black))   => bitboards(11) |= 1L << i
+        case _ => ()
       }
     }
 
-    new BitboardRepresentation(
-      Vector(
-        wPawn, wKnight, wBishop, wRook, wQueen, wKing,
-        bPawn, bKnight, bBishop, bRook, bQueen, bKing
-      )
-    )
+    new BitboardRepresentation(bitboards.toVector)
   }
 
   /**

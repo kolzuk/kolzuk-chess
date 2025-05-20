@@ -4,14 +4,25 @@ ThisBuild / scalaVersion := "2.13.15"
 
 val scalaTestVersion = "3.2.19"
 val catsVersion      = "2.8.0"
+val zioVersion       = "2.1.6"
+val zioHttpVersion   = "3.0.0"
+val zioJsonVersion   = "0.7.3"
+
+val commonLibs = Seq(
+  // ZIO
+  "dev.zio"       %% "zio"       % zioVersion,
+  "dev.zio"       %% "zio-http"  % zioHttpVersion,
+  "dev.zio"       %% "zio-json"  % zioJsonVersion,
+
+  // Cats
+  "org.typelevel" %% "cats-core" % catsVersion,
+  "org.scalactic" %% "scalactic" % scalaTestVersion,
+  "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
+)
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.13.15",
-  libraryDependencies ++= Seq(
-    "org.typelevel" %% "cats-core" % catsVersion,
-    "org.scalactic" %% "scalactic" % scalaTestVersion,
-    "org.scalatest" %% "scalatest" % scalaTestVersion % Test
-  )
+  libraryDependencies ++= commonLibs
 )
 
 lazy val chessEngine = (project in file("modules/chess-engine"))

@@ -13,9 +13,13 @@ object Move {
   import CastleType._
 
   implicit val showMove: Show[Move] = Show.show { move =>
-    val from = s"${('a' + (move.from % 8)).toChar}${move.from / 8 + 1}"
-    val to   = s"${('a' + (move.to % 8)).toChar}${move.to / 8 + 1}"
-    s"$from$to"
+    val from: String      = s"${('a' + (move.from % 8)).toChar}${move.from / 8 + 1}"
+    val to: String        = s"${('a' + (move.to % 8)).toChar}${move.to / 8 + 1}"
+    val promotion: String = move.moveType match {
+      case Promotion(promotion) => s"${promotion.charRepresentation.toLower}"
+      case _                    => ""
+    }
+    s"$from$to$promotion"
   }
 
   def parseFromUCI(uci: String, board: Board): Move = {

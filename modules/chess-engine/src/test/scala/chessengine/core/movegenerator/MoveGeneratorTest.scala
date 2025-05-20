@@ -11,7 +11,7 @@ import org.scalatest.matchers.should.Matchers._
 class MoveGeneratorTest extends AnyFunSuite {
   import chessengine.core.movegenerator.MoveGenerator._
 
-  implicit val moveGenerator: MoveGenerator = new MoveGeneratorImpl
+  implicit val moveGenerator: MoveGenerator = new MoveGeneratorLive
 
   /**
    * @see https://www.chessprogramming.org/Perft_Results#Position_1

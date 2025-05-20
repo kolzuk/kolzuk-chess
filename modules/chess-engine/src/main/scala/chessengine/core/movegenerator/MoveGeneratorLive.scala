@@ -6,7 +6,7 @@ import common.core.model.CastleType._
 import common.core.model.MoveType._
 import common.core.model._
 
-class MoveGeneratorImpl extends MoveGenerator {
+class MoveGeneratorLive extends MoveGenerator {
   import BitboardOperations._
 
   override def generateMoves(board: Board): List[Move] = {

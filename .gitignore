@@ -2,3 +2,4 @@ target/
 project/target/
 .bsp/
 .idea/
+*.sh
