@@ -1,4 +1,4 @@
-package chessengine.core.bitboards
+package common.core.model.bitboards
 
 import BitboardRepresentation._
 import common.core.model._

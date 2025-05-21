@@ -1,10 +1,10 @@
 package chessengine.core.movegenerator
 
-import chessengine.core.bitboards.{BitboardOperations, BitboardRepresentation}
-import chessengine.core.bitboards.BitboardRepresentation.Bitboard
+import common.core.model.bitboards.BitboardRepresentation.Bitboard
 import common.core.model.CastleType._
 import common.core.model.MoveType._
 import common.core.model._
+import common.core.model.bitboards.{BitboardOperations, BitboardRepresentation}
 
 class MoveGeneratorLive extends MoveGenerator {
   import BitboardOperations._

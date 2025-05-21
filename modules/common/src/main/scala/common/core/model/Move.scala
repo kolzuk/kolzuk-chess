@@ -3,11 +3,26 @@ package common.core.model
 import cats.Show
 import common.core.utils.SquareOps
 
+sealed trait MoveType
+
+object MoveType {
+  case object Normal extends MoveType
+  case object EnPassant extends MoveType
+  case class Castle(castleType: CastleType) extends MoveType
+  case class Promotion(promotion: Figure) extends MoveType
+}
+
 final case class Move(
   from: Int,
   to: Int,
   moveType: MoveType
-)
+) {
+
+  def isPromotion: Boolean = moveType match {
+    case MoveType.Promotion(_) => true
+    case _                          => false
+  }
+}
 
 object Move {
   import MoveType._
@@ -20,7 +35,6 @@ object Move {
       case Promotion(promotion) => s"${promotion.charRepresentation.toLower}"
       case _                    => ""
     }
-
     s"$from$to$promotion"
   }
 
@@ -61,15 +75,6 @@ object Move {
 
     Move(from, to, Normal)
   }
-}
-
-sealed trait MoveType
-
-object MoveType {
-  case object Normal extends MoveType
-  case object EnPassant extends MoveType
-  case class Castle(castleType: CastleType) extends MoveType
-  case class Promotion(promotion: Figure) extends MoveType
 }
 
 sealed trait CastleType

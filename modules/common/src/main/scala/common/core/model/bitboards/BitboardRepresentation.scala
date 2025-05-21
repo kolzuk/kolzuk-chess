@@ -1,7 +1,7 @@
-package chessengine.core.bitboards
+package common.core.model.bitboards
 
-import chessengine.core.bitboards.BitboardOperations._
-import chessengine.core.bitboards.BitboardRepresentation._
+import BitboardOperations._
+import BitboardRepresentation._
 import common.core.model.MoveType.Normal
 import common.core.model._
 
@@ -63,7 +63,7 @@ case class BitboardRepresentation(bitboards: Vector[Bitboard]) {
   def occupied: Bitboard = occupiedByWhiteBitboard | occupiedByBlackBitboard
   def empty: Bitboard    = ~occupied
 
-  private def isKingChecked(color: Color): Boolean = {
+  def isKingChecked(color: Color): Boolean = {
     val squareOfKing = bitScanForward(kingBitboard(color))
 
     isSquareAttacked(squareOfKing, color)

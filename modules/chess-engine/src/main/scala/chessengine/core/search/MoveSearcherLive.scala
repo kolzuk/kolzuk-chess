@@ -5,16 +5,33 @@ import chessengine.core.movegenerator.MoveGenerator
 import common.core.model.{Board, Move}
 
 class MoveSearcherLive(evaluator: Evaluator, moveGenerator: MoveGenerator) extends MoveSearcher {
-  // TODO
-  private def orderMoves(moves: List[Move]): List[Move]= ???
+  private def orderMoves(board: Board, moves: List[Move]): List[Move] = {
+    moves
+      .zipWithIndex
+      .map { case (move, index) =>
+        if (board.makeMove(move).isKingChecked)
+          (10000, index)
+        else if (board(move.to).nonEmpty)
+          (9000, index)
+        else if (move.isPromotion)
+          (8000, index)
+        else
+          (1, index)
+      }
+      .sorted
+      .reverse
+      .map { case (_, index) =>
+        moves(index)
+      }
+
+  }
 
   private def alphaBetaMax(_alpha: Int, beta: Int, depthLeft: Int, board: Board): Int = {
     if (depthLeft == 0) return evaluator.evaluate(board)
 
     var alpha = _alpha
     var bestValue = Int.MinValue
-    val allMoves = moveGenerator.generateMoves(board)
-
+    val allMoves = orderMoves(board, moveGenerator.generateMoves(board))
     for (move <- allMoves) {
       val newBoard = board.makeMove(move)
       val score = alphaBetaMin(alpha, beta, depthLeft - 1, newBoard)

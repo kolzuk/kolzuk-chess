@@ -1,37 +1,35 @@
 package chessengine.core.evaluator
 
+import chessengine.core.movegenerator.MoveGenerator
 import common.core.model._
 
-class EvaluatorLive extends Evaluator {
+class EvaluatorLive(moveGenerator: MoveGenerator) extends Evaluator {
   import EvaluatorLive._
 
   override def evaluate(board: Board): Int = {
     val whiteEval = countMaterial(board, Color.White)
     val blackEval = countMaterial(board, Color.Black)
-    val evaluation = whiteEval - blackEval
+    val materialEval = whiteEval - blackEval
+
+//    val whiteMobility = moveGenerator.generateMoves(board.copy(activeColor = Color.White)).length
+//    val blackMobility = moveGenerator.generateMoves(board.copy(activeColor = Color.Black)).length
+//    val mobilityEval = (whiteMobility - blackMobility) * MobilityWeight
+
+    val totalEval = materialEval
 
     val perspective = if (board.activeColor == Color.White) 1 else -1
-
-    evaluation * perspective
+    totalEval * perspective
   }
 }
 
 object EvaluatorLive {
-  private val PawnWeight   = 100
-  private val KnightWeight = 300
-  private val BishopWeight = 300
-  private val RookWeight   = 500
-  private val QueenWeight  = 900
+  private val MobilityWeight = 10
 
   private def countMaterial(board: Board, evaluatingColor: Color): Int = {
     var material = 0
     for (sq <- 0 until 64) {
       board(sq) match {
-        case Some(Pawn(color)) if color == evaluatingColor => material += PawnWeight
-        case Some(Knight(color)) if color == evaluatingColor => material += KnightWeight
-        case Some(Bishop(color)) if color == evaluatingColor => material += BishopWeight
-        case Some(Rook(color)) if color == evaluatingColor => material += RookWeight
-        case Some(Queen(color)) if color == evaluatingColor => material += QueenWeight
+        case Some(f) if f.color == evaluatingColor => material += f.weight
         case _ =>
       }
     }

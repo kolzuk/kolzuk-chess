@@ -1,6 +1,7 @@
 package common.core.model
 
 import Board._
+import common.core.model.bitboards.BitboardRepresentation
 
 /**
  * Immutable class that represents a chess game board in exact 1:1 corresponds with FEN notation.
@@ -159,6 +160,8 @@ case class Board(
   }
 
   def apply(sq: Int): Square = boardRepresentation.apply(sq)
+
+  def isKingChecked: Boolean = BitboardRepresentation.fromBoard(this).isKingChecked(activeColor)
 }
 
 object Board {
