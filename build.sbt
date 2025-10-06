@@ -25,16 +25,24 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= commonLibs
 )
 
+import sbtassembly.AssemblyPlugin.autoImport.*
+
 lazy val chessEngine = (project in file("modules/chess-engine"))
   .settings(
     name := "chess-engine",
     commonSettings,
+    Compile / mainClass := Some("chessengine.Main"),
+    assembly / assemblyMergeStrategy := {
+      case "META-INF/io.netty.versions.properties" => MergeStrategy.first
+      case PathList("META-INF", xs @ _*)           => MergeStrategy.discard
+      case _                                       => MergeStrategy.first
+    }
   ).dependsOn(common)
 
 lazy val publicApi = (project in file("modules/public-api"))
   .settings(
     name := "public-api",
-    commonSettings
+    commonSettings,
   )
 
 lazy val common = (project in file("modules/common"))
