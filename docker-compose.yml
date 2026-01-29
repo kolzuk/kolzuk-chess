@@ -1,0 +1,9 @@
+services:
+  chess-engine:
+    build: .
+    ports:
+      - "8080:80"
+    container_name: kolzuk-chess-engine
+    restart: unless-stopped
+    environment:
+      - JAVA_OPTS=-Xmx512m -Xms256m
