@@ -1,9 +1,9 @@
-# kolzuk-chess.
+# Kolzuk Chess
 
-Бекенд для шахматного движка.
+Backend for a chess engine.
 
-Список работающих сервисов:
+List of working services:
 - chess-engine
 
 ### chess-engine
-- Запуск через `sbt "chessEngine/run"`
+- Launch via `sbt "chessEngine/run"`
