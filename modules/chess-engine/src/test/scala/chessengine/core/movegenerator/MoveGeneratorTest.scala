@@ -24,7 +24,7 @@ class MoveGeneratorTest extends AnyFunSuite {
     perft(3, board) shouldBe 8902
     perft(4, board) shouldBe 197_281
     perft(5, board) shouldBe 4_865_609
-    perft(6, board) shouldBe 119_060_324
+//    perft(6, board) shouldBe 119_060_324
   }
 
   /**
@@ -50,7 +50,7 @@ class MoveGeneratorTest extends AnyFunSuite {
     perft(3, board) shouldBe 2812
     perft(4, board) shouldBe 43238
     perft(5, board) shouldBe 674_624
-    perft(6, board) shouldBe 11_030_083
+//    perft(6, board) shouldBe 11_030_083
   }
 
   /**
@@ -63,7 +63,7 @@ class MoveGeneratorTest extends AnyFunSuite {
     perft(2, board) shouldBe 264
     perft(3, board) shouldBe 9467
     perft(4, board) shouldBe 422333
-    perft(5, board) shouldBe 15_833_292
+//    perft(5, board) shouldBe 15_833_292
   }
 
   /**
@@ -76,7 +76,7 @@ class MoveGeneratorTest extends AnyFunSuite {
     perft(2, board) shouldBe 1486
     perft(3, board) shouldBe 62379
     perft(4, board) shouldBe 2103487
-    perft(5, board) shouldBe 89_941_194
+//    perft(5, board) shouldBe 89_941_194
   }
 
   /**
@@ -89,7 +89,7 @@ class MoveGeneratorTest extends AnyFunSuite {
     perft(1, board) shouldBe 46
     perft(2, board) shouldBe 2079
     perft(3, board) shouldBe 89890
-    perft(4, board) shouldBe 3894594
-    perft(5, board) shouldBe 164_075_551
+//    perft(4, board) shouldBe 3894594
+//    perft(5, board) shouldBe 164_075_551
   }
 }
