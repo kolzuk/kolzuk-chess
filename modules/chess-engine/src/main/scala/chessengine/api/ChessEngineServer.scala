@@ -15,17 +15,16 @@ object ChessEngineServer {
   import BestMovesEndpoint._
   import MakeMoveEndpoint._
 
-  type ChessEnv = MoveGenerator & MoveSearcher & Evaluator & Server
+  type ChessEngineEnvironment = MoveGenerator & MoveSearcher & Evaluator & Server
 
   private val allEndpoints = Seq(allPossibleMovesEndpoint, bestMovesEndpoint, makeMoveEndpoint)
-  private val openAPI = OpenAPIGen.fromEndpoints(title = "kolzuk-chess API", version = "1.0", allEndpoints)
-  private val swaggerRoutes = SwaggerUI.routes("docs", openAPI)
+  private val openAPIDocumentation = OpenAPIGen.fromEndpoints(title = "ChessEngine API", version = "1.0", allEndpoints)
+  private val swaggerDocumentationRoutes = SwaggerUI.routes("documentation", openAPIDocumentation)
 
   private val apiRoutes = Routes(allPossibleMovesRoute, bestMovesRoute, makeMoveRoute)
-  private val routes = apiRoutes ++ swaggerRoutes
+  private val comprehensiveRoutes = apiRoutes ++ swaggerDocumentationRoutes
 
-
-  private val corsConfig = CorsConfig()
-  private val routesWithCors = Middleware.cors(corsConfig)(routes)
-  def run: ZIO[ChessEnv, Throwable, Nothing] = Server.serve(routesWithCors)
+  private val corsConfiguration = CorsConfig()
+  private val routesWithCrossOriginSupport = Middleware.cors(corsConfiguration)(comprehensiveRoutes)
+  def startServer: ZIO[ChessEngineEnvironment, Throwable, Unit] = Server.serve(routesWithCrossOriginSupport)
 }
