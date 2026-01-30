@@ -17,37 +17,32 @@ object MoveGenerator {
 
   /** Perf(omance) t(est) - a debugging function to walk the move generation tree of
    *  strictly legal moves to count all the leaf nodes of a certain depth, which can
-   *  compared to predetermined values and used to isolate bugs.
+   *  be compared to predetermined values and used to isolate bugs.
    */
-  def perft(depth: Int, board: Board, isFirstCall: Boolean = true)(implicit moveGenerator: MoveGenerator): Long =
-    if (depth == 0) 1L
-    else {
-      val moves = moveGenerator.generateMoves(board)
-      if (depth == 1) {
-        val allMovesCount = moves.map(m => {
-          val countOfMoves = perft(depth - 1, board.makeMove(m), isFirstCall = false)
-          if (isFirstCall)
-            println(s"${m.show} $countOfMoves")
-          countOfMoves
-        }).sum
-        if (isFirstCall) {
-          println(s"\n$allMovesCount")
-        }
-        moves.length
-      }
-      else {
-        val allMovesCount = moves.map(m => {
-          val countOfMoves = perft(depth - 1, board.makeMove(m), isFirstCall = false)
-          if (isFirstCall)
-            println(s"${m.show} $countOfMoves")
-          countOfMoves
+  def perft(depth: Int, board: Board, isFirstCall: Boolean = true)(implicit moveGenerator: MoveGenerator): Long = {
+    @annotation.tailrec
+    def perftTailRec(currentDepth: Int, currentBoard: Board, isFirstCall: Boolean, acc: Long): Long = {
+      if (currentDepth == 0) {
+        acc + 1
+      } else {
+        val moves = moveGenerator.generateMoves(currentBoard)
+        val nextDepth = currentDepth - 1
+        val moveCount = moves.map(m => {
+          val count = perftTailRec(nextDepth, currentBoard.makeMove(m), isFirstCall = false, acc)
+          if (isFirstCall) {
+            println(s"${m.show} $count")
+          }
+          count
         }).sum
 
         if (isFirstCall) {
-          println(s"\n$allMovesCount")
+          println(s"\n$moveCount")
         }
 
-        allMovesCount
+        moveCount + acc
       }
     }
+
+    perftTailRec(depth, board, isFirstCall, 0L)
+  }
 }
