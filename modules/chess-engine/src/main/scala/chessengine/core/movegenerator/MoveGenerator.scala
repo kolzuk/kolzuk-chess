@@ -16,38 +16,42 @@ object MoveGenerator {
   val live: ULayer[MoveGenerator] = ZLayer.succeed(new MoveGeneratorLive)
 
   /** Perf(omance) t(est) - a debugging function to walk the move generation tree of
-   *  strictly legal moves to count all the leaf nodes of a certain depth, which can
-   *  compared to predetermined values and used to isolate bugs.
+   * strictly legal moves to count all the leaf nodes of a certain depth, which can
+   * be compared to predetermined values and used to isolate bugs.
    */
-  def perft(depth: Int, board: Board, isFirstCall: Boolean = true)(implicit moveGenerator: MoveGenerator): Long =
-    if (depth == 0) 1L
-    else {
-      val moves = moveGenerator.generateMoves(board)
-      if (depth == 1) {
-        val allMovesCount = moves.map(m => {
-          val countOfMoves = perft(depth - 1, board.makeMove(m), isFirstCall = false)
-          if (isFirstCall)
-            println(s"${m.show} $countOfMoves")
-          countOfMoves
-        }).sum
-        if (isFirstCall) {
-          println(s"\n$allMovesCount")
-        }
-        moves.length
-      }
-      else {
-        val allMovesCount = moves.map(m => {
-          val countOfMoves = perft(depth - 1, board.makeMove(m), isFirstCall = false)
-          if (isFirstCall)
-            println(s"${m.show} $countOfMoves")
-          countOfMoves
-        }).sum
+  def perft(depth: Int, board: Board, isFirstCall: Boolean = true)(implicit moveGenerator: MoveGenerator): Long = {
+    @annotation.tailrec
+    def perftRec(currentDepth: Int, currentBoard: Board, acc: Long, isFirstCall: Boolean): Long = {
+      if (currentDepth == 0) {
+        acc
+      } else {
+        val moves = moveGenerator.generateMoves(currentBoard)
+        val moveCount = moves.length
 
-        if (isFirstCall) {
-          println(s"\n$allMovesCount")
+        if (currentDepth == 1) {
+          val moveCounts = moves.map(m => perftRec(currentDepth - 1, currentBoard.makeMove(m), 0, false))
+          val totalMovesCount = moveCounts.sum + moveCount
+          if (isFirstCall) {
+            println(s"${currentDepth} ${m.show} $totalMovesCount")
+          }
+          if (isFirstCall) {
+            println(s"\n$totalMovesCount")
+          }
+          totalMovesCount
+        } else {
+          val moveCounts = moves.map(m => perftRec(currentDepth - 1, currentBoard.makeMove(m), 0, false))
+          val totalMovesCount = moveCounts.sum + moveCount
+          if (isFirstCall) {
+            println(s"${currentDepth} ${m.show} $totalMovesCount")
+          }
+          if (isFirstCall) {
+            println(s"\n$totalMovesCount")
+          }
+          totalMovesCount
         }
-
-        allMovesCount
       }
     }
+
+    perftRec(depth, board, 0, isFirstCall)
+  }
 }
