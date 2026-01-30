@@ -9,20 +9,19 @@ import zio._
  */
 trait MoveGenerator {
   def generateMoves(board: Board): List[Move]
-}
 
-object MoveGenerator {
-
-  val live: ULayer[MoveGenerator] = ZLayer.succeed(new MoveGeneratorLive)
-
-  /** Perf(omance) t(est) - a debugging function to walk the move generation tree of
-   *  strictly legal moves to count all the leaf nodes of a certain depth, which can
-   *  compared to predetermined values and used to isolate bugs.
+  /**
+   * Generates all possible moves at a given depth and prints the number of moves at each step.
+   *
+   * @param depth   The depth to which the move generation tree should be explored.
+   * @param board   The current state of the board.
+   * @param isFirstCall   Indicates if this is the first call to the function.
+   * @return  The total number of moves generated at the specified depth.
    */
-  def perft(depth: Int, board: Board, isFirstCall: Boolean = true)(implicit moveGenerator: MoveGenerator): Long =
+  def perft(depth: Int, board: Board, isFirstCall: Boolean = true)(implicit moveGenerator: MoveGenerator): Long = {
     if (depth == 0) 1L
     else {
-      val moves = moveGenerator.generateMoves(board)
+      val moves = generateMoves(board)
       if (depth == 1) {
         val allMovesCount = moves.map(m => {
           val countOfMoves = perft(depth - 1, board.makeMove(m), isFirstCall = false)
@@ -50,4 +49,10 @@ object MoveGenerator {
         allMovesCount
       }
     }
+  }
+}
+
+object MoveGenerator {
+
+  val live: ULayer[MoveGenerator] = ZLayer.succeed(new MoveGeneratorLive)
 }
