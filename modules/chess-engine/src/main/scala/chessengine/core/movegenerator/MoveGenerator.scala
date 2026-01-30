@@ -19,7 +19,7 @@ object MoveGenerator {
    *  strictly legal moves to count all the leaf nodes of a certain depth, which can
    *  compared to predetermined values and used to isolate bugs.
    */
-  def perft(depth: Int, board: Board, isFirstCall: Boolean = true)(implicit moveGenerator: MoveGenerator): Long =
+  def perft(depth: Int, board: Board, isFirstCall: Boolean = true)(implicit moveGenerator: MoveGenerator): Long = {
     if (depth == 0) 1L
     else {
       val moves = moveGenerator.generateMoves(board)
@@ -50,4 +50,12 @@ object MoveGenerator {
         allMovesCount
       }
     }
+  }
+
+  // Added a method to check if the MoveGenerator is correctly generating moves
+  def checkMoveGeneration(board: Board)(implicit moveGenerator: MoveGenerator): Unit = {
+    val moves = moveGenerator.generateMoves(board)
+    println(s"Board: ${board.show}")
+    println(s"Moves: ${moves.map(_.show).mkString(", ")}")
+  }
 }
