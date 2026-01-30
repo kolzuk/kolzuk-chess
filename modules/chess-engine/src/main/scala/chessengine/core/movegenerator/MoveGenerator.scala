@@ -19,35 +19,22 @@ object MoveGenerator {
    *  strictly legal moves to count all the leaf nodes of a certain depth, which can
    *  compared to predetermined values and used to isolate bugs.
    */
-  def perft(depth: Int, board: Board, isFirstCall: Boolean = true)(implicit moveGenerator: MoveGenerator): Long =
-    if (depth == 0) 1L
-    else {
-      val moves = moveGenerator.generateMoves(board)
-      if (depth == 1) {
-        val allMovesCount = moves.map(m => {
-          val countOfMoves = perft(depth - 1, board.makeMove(m), isFirstCall = false)
-          if (isFirstCall)
-            println(s"${m.show} $countOfMoves")
-          countOfMoves
-        }).sum
-        if (isFirstCall) {
-          println(s"\n$allMovesCount")
-        }
-        moves.length
-      }
+  def perft(depth: Int, board: Board, isFirstCall: Boolean = true)(implicit moveGenerator: MoveGenerator): Long = {
+    @annotation.tailrec
+    def perftHelper(currentDepth: Int, currentBoard: Board, isFirstCall: Boolean, accumulatedCount: Long): Long = {
+      if (currentDepth == 0) accumulatedCount + 1
       else {
-        val allMovesCount = moves.map(m => {
-          val countOfMoves = perft(depth - 1, board.makeMove(m), isFirstCall = false)
-          if (isFirstCall)
-            println(s"${m.show} $countOfMoves")
-          countOfMoves
-        }).sum
-
+        val moves = moveGenerator.generateMoves(currentBoard)
+        val nextDepthCount = moves.map(move =>
+          perftHelper(currentDepth - 1, currentBoard.makeMove(move), isFirstCall = false, accumulatedCount)
+        ).sum
         if (isFirstCall) {
-          println(s"\n$allMovesCount")
+          println(s"Depth $currentDepth: $nextDepthCount")
         }
-
-        allMovesCount
+        perftHelper(currentDepth - 1, currentBoard.makeMove(moves.head), isFirstCall = false, nextDepthCount)
       }
     }
+
+    perftHelper(depth, board, isFirstCall, 0L)
+  }
 }
